@@ -457,7 +457,7 @@ contract Stratax is Initializable {
     {
         // Get the address of the debt token
         (,, address debtToken) = aaveDataProvider.getReserveTokensAddresses(_borrowToken);
-        debtAmount = IERC20(debtToken).balanceOf(address(this));
+        debtAmount = IERC20(debtToken).balanceOf(address(this));//q what if 1 more user open the postion with the same debt token
         uint256 debtTokenPrice = IStrataxOracle(strataxOracle).getPrice(_borrowToken);
         uint256 collateralTokenPrice = IStrataxOracle(strataxOracle).getPrice(_collateralToken);
 
@@ -496,7 +496,7 @@ contract Stratax is Initializable {
         aavePool.supply(_asset, totalCollateral, address(this), 0);
 
         // Store initial balance to verify all borrowed tokens are used in swap
-        uint256 prevBorrowTokenBalance = IERC20(flashParams.borrowToken).balanceOf(address(this));
+        uint256 prevBorrowTokenBalance = IERC20(flashParams.borrowToken).balanceOf(address(this)); //q same what if in the contract left borrow tokens from previous operations?
         // Step 2: Borrow against the supplied collateral
         aavePool.borrow(
             flashParams.borrowToken,
@@ -514,7 +514,7 @@ contract Stratax is Initializable {
             _call1InchSwap(flashParams.oneInchSwapData, flashParams.borrowToken, flashParams.minReturnAmount);
 
         // Ensure all borrowed tokens were used in the swap
-        uint256 afterSwapBorrowTokenbalance = IERC20(flashParams.borrowToken).balanceOf(address(this));
+        uint256 afterSwapBorrowTokenbalance = IERC20(flashParams.borrowToken).balanceOf(address(this)); //q same what if in the contract left borrow tokens from previous operations?
         require(afterSwapBorrowTokenbalance == prevBorrowTokenBalance, "Borrow token left in contract");
 
         // Step 4: Repay flash loan
