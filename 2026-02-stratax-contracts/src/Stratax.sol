@@ -201,12 +201,12 @@ contract Stratax is Initializable {
      */
     function executeOperation(
         address _asset,
-        uint256 _amount,
+        uint256 _amount,  //q why we dont checks 0 or negative amount?
         uint256 _premium,
         address _initiator,
         bytes calldata _params
     ) external returns (bool) {
-        require(msg.sender == address(aavePool), "Caller must be Aave Pool");
+        require(msg.sender == address(aavePool), "Caller must be Aave Pool"); // audit-gas in 0.8.13 perfer to use custom errors, more gas efficient
         require(_initiator == address(this), "Initiator must be this contract");
 
         // Decode operation type
@@ -322,7 +322,7 @@ contract Stratax is Initializable {
     ) public onlyOwner {
         require(_collateralAmount > 0, "Collateral Cannot be Zero");
         // Transfer the user's collateral to the contract
-        IERC20(_flashLoanToken).transferFrom(msg.sender, address(this), _collateralAmount);
+        IERC20(_flashLoanToken).transferFrom(msg.sender, address(this), _collateralAmount); // audit-medium we are not checking the return value of this transfer
 
         FlashLoanParams memory params = FlashLoanParams({
             collateralToken: _flashLoanToken,
