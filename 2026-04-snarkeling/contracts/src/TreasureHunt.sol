@@ -85,7 +85,7 @@ contract TreasureHunt {
         if (address(this).balance < REWARD) revert NotEnoughFunds();
         if (recipient == address(0) || recipient == address(this) || recipient == owner || recipient == msg.sender) revert InvalidRecipient();
         if (claimsCount >= MAX_TREASURES) revert AllTreasuresClaimed();
-        if (claimed[_treasureHash]) revert AlreadyClaimed(treasureHash);
+        if (claimed[_treasureHash]) revert AlreadyClaimed(treasureHash);// audit high wrong mapping check, lead to claming the same treasure twice
         if (msg.sender == owner) revert OwnerCannotClaim();
 
 
