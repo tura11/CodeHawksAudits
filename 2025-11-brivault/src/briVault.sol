@@ -278,7 +278,7 @@ contract BriVault is ERC4626, Ownable {
            revert eventStarted();
         }
 
-        uint256 refundAmount = stakedAsset[msg.sender];
+        uint256 refundAmount = stakedAsset[msg.sender]; //audit-high in deposit function we are updating stakes[receiver] but funds are updated to msg.sender
 
         stakedAsset[msg.sender] = 0;
 
