@@ -173,7 +173,7 @@ contract BriVault is ERC4626, Ownable {
         return winner;
     }
 
-
+  
     /**
         @notice get country 
      */
@@ -219,7 +219,7 @@ contract BriVault is ERC4626, Ownable {
 
         uint256 stakeAsset = assets - fee;
 
-        stakedAsset[receiver] = stakeAsset;
+        stakedAsset[receiver] = stakeAsset; // audit-high we are no adding the values, it tracks the most recent one.
 
         uint256 participantShares = _convertToShares(stakeAsset);
 

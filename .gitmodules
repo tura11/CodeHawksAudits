@@ -1,0 +1,3 @@
+[submodule "2025-10-raisebox-faucet/lib/openzeppelin-contracts"]
+	path = 2025-10-raisebox-faucet/lib/openzeppelin-contracts
+	url = https://github.com/OpenZeppelin/openzeppelin-contracts
