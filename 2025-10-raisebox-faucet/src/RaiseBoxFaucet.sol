@@ -106,7 +106,7 @@ contract RaiseBoxFaucet is ERC20, Ownable {
     /// @param to Address that will receive minted tokens (must be the contract itself)
     /// @param amount Number of tokens to mint
 
-    function mintFaucetTokens(address to, uint256 amount) public onlyOwner {
+    function mintFaucetTokens(address to, uint256 amount) public onlyOwner { // audit could be extenral
         if (to != address(this)) {
             revert RaiseBoxFaucet_MiningToNonContractAddressFailed();
         }
@@ -124,14 +124,15 @@ contract RaiseBoxFaucet is ERC20, Ownable {
     /// @dev Transfers tokens to owner first, then burns from owner
     /// @param amountToBurn Amount of tokens to burn
 
-    function burnFaucetTokens(uint256 amountToBurn) public onlyOwner {
+    function burnFaucetTokens(uint256 amountToBurn) public onlyOwner { // audit could be extenral
         require(amountToBurn <= balanceOf(address(this)), "Faucet Token Balance: Insufficient");
 
         // transfer faucet balance to owner first before burning
         // ensures owner has a balance before _burn (owner only function) can be called successfully
-        _transfer(address(this), msg.sender, balanceOf(address(this)));
+        _transfer(address(this), msg.sender, balanceOf(address(this)));  // q why are we sedning whole vault balance to the owner??
 
         _burn(msg.sender, amountToBurn);
+        // audit-no event?
     }
 
     /// @notice Adjust the daily claim limit for the contract
@@ -139,7 +140,7 @@ contract RaiseBoxFaucet is ERC20, Ownable {
     /// @param by The amount to adjust the `dailyClaimLimit` by
     /// @param increaseClaimLimit Set to true to increase, false to decrease
 
-    function adjustDailyClaimLimit(uint256 by, bool increaseClaimLimit) public onlyOwner {
+    function adjustDailyClaimLimit(uint256 by, bool increaseClaimLimit) public onlyOwner { //audit - could be external
         if (increaseClaimLimit) {
             dailyClaimLimit += by;
         } else {
@@ -195,7 +196,7 @@ contract RaiseBoxFaucet is ERC20, Ownable {
                 hasClaimedEth[faucetClaimer] = true;
                 dailyDrips += sepEthAmountToDrip;
 
-                (bool success,) = faucetClaimer.call{value: sepEthAmountToDrip}("");
+                (bool success,) = faucetClaimer.call{value: sepEthAmountToDrip}(""); // audit-high reentracy!!
 
                 if (success) {
                     emit SepEthDripped(faucetClaimer, sepEthAmountToDrip);
@@ -209,7 +210,7 @@ contract RaiseBoxFaucet is ERC20, Ownable {
                 );
             }
         } else {
-            dailyDrips = 0;
+            dailyDrips = 0; // audit high user who claimed eth after 3 days can manipulate the limits of the faceut
         }
 
         /**
